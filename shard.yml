@@ -1,0 +1,19 @@
+name: htsgrid
+version: 0.1.0
+
+authors:
+  - kojix2 <2xijok@gmail.com>
+
+targets:
+  htsgrid:
+    main: src/htsgrid.cr
+
+dependencies:
+  gtk4:
+    github: hugopl/gtk4.cr
+  hts:
+    github: kojix2/hts
+
+crystal: 1.5.1
+
+license: MIT
