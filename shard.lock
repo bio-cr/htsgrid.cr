@@ -10,7 +10,7 @@ shards:
 
   hts:
     git: https://github.com/kojix2/hts.git
-    version: 0.0.3
+    version: 0.0.3+git.commit.d6a84e2e588e46ca5db83c2ecde1f5fe68493ad6
 
   version_from_shard:
     git: https://github.com/hugopl/version_from_shard.git

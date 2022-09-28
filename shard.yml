@@ -13,6 +13,7 @@ dependencies:
     github: hugopl/gtk4.cr
   hts:
     github: kojix2/hts
+    branch: develop
 
 crystal: 1.5.1
 
