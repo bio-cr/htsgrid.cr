@@ -41,24 +41,29 @@ def get_file_path(app)
 end
 
 def fill_model(model : Gtk::ListStore, file_path)
-  HTS::Bam.open(file_path) do |bam|
-    bam.each do |r|
-      itr = model.append
-      row = [
-        r.qname,
-        r.flag.to_s,
-        r.chrom,
-        (r.pos + 1).to_s,
-        (r.mapq).to_s,
-        r.cigar.to_s,
-        r.mate_chrom,
-        (r.mpos + 1).to_s,
-        r.isize.to_s,
-        r.seq,
-      ]
-      model.set(itr, (0..10), row)
-    end
+  begin
+    bam = HTS::Bam.open(file_path)
+  rescue
+    return
   end
+  model.clear
+  bam.each do |r|
+    itr = model.append
+    row = [
+      r.qname,
+      r.flag.to_s,
+      r.chrom,
+      (r.pos + 1).to_s,
+      (r.mapq).to_s,
+      r.cigar.to_s,
+      r.mate_chrom,
+      (r.mpos + 1).to_s,
+      r.isize.to_s,
+      r.seq,
+    ]
+    model.set(itr, (0..10), row)
+  end
+  bam.close
 end
 
 app = Gtk::Application.new("htsgrid.kojix2.com", Gio::ApplicationFlags::None)
