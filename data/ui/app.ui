@@ -20,6 +20,9 @@
   </object>
   <object class="GtkAdjustment" id="vscroll"/>
   <object class="GtkApplicationWindow" id="window">
+    <property name="default-width">800</property>
+    <property name="default-height">400</property>
+    <property name="title">HTSGrid</property>
     <property name="child">
       <object class="GtkBox">
         <property name="orientation">vertical</property>
@@ -172,8 +175,5 @@
         </child>
       </object>
     </property>
-    <property name="default-height">200</property>
-    <property name="default-width">600</property>
-    <property name="title">HTSGrid</property>
   </object>
 </interface>

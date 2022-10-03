@@ -15,7 +15,7 @@ module HTSGrid
       open_button = Gtk::Button.cast(builder["open_button"])
       entry = Gtk::Entry.cast(builder["entry"])
       open_button.clicked_signal.connect do
-        file_path = entry.text
+        file_path = File.expand_path(entry.text, home: Path.home)
         unless file_path.nil?
           fill_model(list_model, file_path)
         end
