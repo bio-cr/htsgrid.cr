@@ -9,21 +9,29 @@ module HTSGrid
       @app.run
     end
 
+    def builder
+      @builder ||= Gtk::Builder.new_from_resource("/dev/kojix2/htsgrid/ui/app.ui")
+    end
+
+    def list_model
+      @list_model ||= Gtk::ListStore.cast(builder["list_model"])
+    end
+
     def activate(app : Gtk::Application)
-      builder = Gtk::Builder.new_from_resource("/dev/kojix2/htsgrid/ui/app.ui")
-      list_model = Gtk::ListStore.cast(builder["list_model"])
       open_button = Gtk::Button.cast(builder["open_button"])
       entry = Gtk::Entry.cast(builder["entry"])
-      open_button.clicked_signal.connect do
-        file_path = File.expand_path(entry.text, home: Path.home)
-        unless file_path.nil?
-          fill_model(list_model, file_path)
-        end
-      end
+      open_button.clicked_signal.connect { open_button_clicked(entry.text) }
       window = Gtk::ApplicationWindow.cast(builder["window"])
       window.application = app
       tree_view = Gtk::TreeView.cast(builder["tree_view"])
       window.present
+    end
+
+    def open_button_clicked(path : String)
+      file_path = File.expand_path(path, home: Path.home)
+      list_model.try do |model|
+        fill_model(model, file_path)
+      end
     end
 
     def get_file_path(app)
