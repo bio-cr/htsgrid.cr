@@ -1,4 +1,4 @@
-# htsgrid
+# HTSGrid
 
 A simple HTS file viewer
 
@@ -9,21 +9,24 @@ A simple HTS file viewer
 * HTSLib
 
 ```sh
-shards install
-crystal build src/htsgrid.cr
+make
+sudo make install
 ```
-
 
 ## Usage
 
 ```
-./htsgrid
+htsgrid
 ```
 
 ## Development
 
 Let's learn.
 
+```sh
+shards install
+crystal build src/htsgrid.cr
+```
 ## Contributing
 
 1. Fork it (<https://github.com/your-github-user/htsgrid/fork>)
