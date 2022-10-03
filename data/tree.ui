@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Cambalache 0.10.3 -->
 <interface>
   <!-- interface-name tree.cmb.ui -->
@@ -39,128 +39,132 @@
           </object>
         </child>
         <child>
-          <object class="GtkTreeView" id="tree_view">
-            <property name="model">list_model</property>
-            <property name="vexpand">True</property>
-            <property name="vadjustment">vscroll</property>
+          <object class="GtkScrolledWindow">
             <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">QNAME</property>
+              <object class="GtkTreeView" id="tree_view">
+                <property name="model">list_model</property>
+                <property name="vexpand">True</property>
+                <property name="vadjustment">vscroll</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">QNAME</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">FLAG</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">1</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">FLAG</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">1</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">RNAME</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">2</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">RNAME</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">2</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">POS</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">3</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">POS</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">3</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">MAPQ</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">4</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">MAPQ</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">4</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">CIGAR</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">5</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">CIGAR</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">5</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">RNEXT</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">6</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">RNEXT</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">6</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">PNEXT</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">7</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">PNEXT</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">7</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">TLEN</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">8</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">TLEN</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">8</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">SEQ</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">9</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">SEQ</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">9</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child>
-              <object class="GtkTreeViewColumn">
-                <property name="title">QUAL</property>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">10</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn">
+                    <property name="title">QUAL</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">10</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
               </object>
             </child>
