@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+StartupWMClass=HTSGrid
+Exec=htsgrid %F
+Name=HTSGrid
+GenericName=HTSGrid
+Comment=Simple HTS File Viewer
+Terminal=false
+Icon=dev.kojix2.htsgrid
+Categories=Education;Science;Biology;
+Keywords=htslib;sam;bam;vcf;bcf;

@@ -175,5 +175,24 @@
         </child>
       </object>
     </property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <child type="end">
+          <menu id="primary_menu">
+            <section>
+              <item>
+                <attribute name="label">_About HTSGrid</attribute>
+                <attribute name="action">app.about</attribute>
+              </item>
+            </section>
+          </menu>
+          <object class="GtkMenuButton" id="tinyMenu">
+            <property name="menu-model">primary_menu</property>
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="tooltip-text">Menu</property>
+          </object>
+        </child>
+      </object>
+    </child>
   </object>
 </interface>
