@@ -1,9 +1,12 @@
 module HTSGrid
   module View
     class MainWindow
+      getter file_path : String
+
       def initialize
         @app = Gtk::Application.new("htsgrid.kojix2.com", Gio::ApplicationFlags::None)
         @app.activate_signal.connect(->activate(Gtk::Application))
+        @file_path = ""
       end
 
       def run
@@ -20,14 +23,6 @@ module HTSGrid
 
       private def window
         @window ||= window = Gtk::ApplicationWindow.cast(builder["window"])
-      end
-
-      private def label_path
-        @label_path ||= Gtk::Label.cast(builder["label_path"])
-      end
-
-      def file_path
-        label_path.text
       end
 
       def activate(app : Gtk::Application)
@@ -61,7 +56,8 @@ module HTSGrid
             unless file_path.nil?
               file_path = File.expand_path(file_path, home: Path.home)
               list_model.try { |model| fill_model(model, file_path) }
-              label_path.text = file_path
+              window.title = file_path
+              @file_path = file_path
             end
           end
           dialog.destroy
