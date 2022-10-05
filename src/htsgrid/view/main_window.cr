@@ -22,20 +22,19 @@ module HTSGrid
         @window ||= window = Gtk::ApplicationWindow.cast(builder["window"])
       end
 
+      def label_path
+        @label_path ||= Gtk::Label.cast(builder["label_path"])
+      end
+
       def activate(app : Gtk::Application)
         open_button = Gtk::Button.cast(builder["open_button"])
-        entry = Gtk::Entry.cast(builder["entry"])
         open_button.clicked_signal.connect do
-          open_button_clicked(entry.text)
+          file_chooser_dialog
         end
         HTSGrid::Action::About.new(app)
         window.application = app
         tree_view = Gtk::TreeView.cast(builder["tree_view"])
         window.present
-      end
-
-      def open_button_clicked(path : String)
-        file_chooser_dialog
       end
 
       def file_chooser_dialog
@@ -56,6 +55,7 @@ module HTSGrid
             unless file_path.nil?
               file_path = File.expand_path(file_path, home: Path.home)
               list_model.try { |model| fill_model(model, file_path) }
+              label_path.text = file_path
             end
           end
           dialog.destroy
