@@ -35,6 +35,11 @@
               </object>
             </child>
             <child>
+              <object class="GtkButton" id="header_button">
+                <property name="label">Header</property>
+              </object>
+            </child>
+            <child>
               <object class="GtkLabel" id="label_path">
                 <property name="hexpand">true</property>
               </object>

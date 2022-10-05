@@ -10,34 +10,40 @@ module HTSGrid
         @app.run
       end
 
-      def builder
+      private def builder
         @builder ||= Gtk::Builder.new_from_resource("/dev/kojix2/htsgrid/ui/app.ui")
       end
 
-      def list_model
+      private def list_model
         @list_model ||= Gtk::ListStore.cast(builder["list_model"])
       end
 
-      def window
+      private def window
         @window ||= window = Gtk::ApplicationWindow.cast(builder["window"])
       end
 
-      def label_path
+      private def label_path
         @label_path ||= Gtk::Label.cast(builder["label_path"])
+      end
+
+      def file_path
+        label_path.text
       end
 
       def activate(app : Gtk::Application)
         open_button = Gtk::Button.cast(builder["open_button"])
-        open_button.clicked_signal.connect do
-          file_chooser_dialog
-        end
+        open_button.clicked_signal.connect(->open_button_clicked)
+
+        header_button = Gtk::Button.cast(builder["header_button"])
+        header_button.clicked_signal.connect(->header_button_clicked)
+
         HTSGrid::Action::About.new(app)
         window.application = app
         tree_view = Gtk::TreeView.cast(builder["tree_view"])
         window.present
       end
 
-      def file_chooser_dialog
+      def open_button_clicked
         dialog = Gtk::FileChooserDialog.new(
           application: @app,
           title: "Open File",
@@ -61,6 +67,16 @@ module HTSGrid
           dialog.destroy
         end
         dialog.present
+      end
+
+      def header_button_clicked
+        begin
+          HTS::Bam.open(file_path) do |hts|
+            puts hts.header.to_s   
+          end
+        rescue
+          return
+        end
       end
 
       def fill_model(model : Gtk::ListStore, file_path)
