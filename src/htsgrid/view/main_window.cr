@@ -70,13 +70,16 @@ module HTSGrid
       end
 
       def header_button_clicked
+        header_string = ""
         begin
           HTS::Bam.open(file_path) do |hts|
-            puts hts.header.to_s   
+            header_string = hts.header.to_s   
           end
         rescue
           return
         end
+        hw = HeaderWindow.new(@app)
+        hw.text = header_string
       end
 
       def fill_model(model : Gtk::ListStore, file_path)
