@@ -4,7 +4,7 @@ module HTSGrid
       getter file_path : String
 
       def initialize
-        @app = Gtk::Application.new("htsgrid.kojix2.com", Gio::ApplicationFlags::None)
+        @app = Gtk::Application.new("htsgrid.bio-cr.com", Gio::ApplicationFlags::None)
         @app.activate_signal.connect(->activate(Gtk::Application))
         @file_path = ""
       end
@@ -14,7 +14,7 @@ module HTSGrid
       end
 
       private def builder
-        @builder ||= Gtk::Builder.new_from_resource("/dev/kojix2/htsgrid/ui/app.ui")
+        @builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
       private def list_model

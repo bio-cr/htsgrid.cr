@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="/dev/kojix2/htsgrid">
-    <file compressed="true" preprocess="xml-stripblanks">icons/dev.kojix2.htsgrid.svg</file>
+  <gresource prefix="/dev/bio-cr/htsgrid">
+    <file compressed="true" preprocess="xml-stripblanks">icons/dev.bio-cr.htsgrid.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/app.ui</file>
   </gresource>
 </gresources>

@@ -7,7 +7,7 @@ module HTSGrid
       end
 
       private def builder
-        @builder ||= Gtk::Builder.new_from_resource("/dev/kojix2/htsgrid/ui/app.ui")
+        @builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
       private def window

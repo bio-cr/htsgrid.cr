@@ -6,6 +6,6 @@ Name=HTSGrid
 GenericName=HTSGrid
 Comment=Simple HTS File Viewer
 Terminal=false
-Icon=dev.kojix2.htsgrid
+Icon=dev.bio-cr.htsgrid
 Categories=Education;Science;Biology;
 Keywords=htslib;sam;bam;vcf;bcf;
