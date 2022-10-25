@@ -1,12 +1,16 @@
 # HTSGrid
 
-A simple HTS file viewer
+A simple SAM/BAM viewer
+
+![screenshot](data/screenshot.png)
+
+:construction: under development
 
 ## Installation
 
-* Crystal
-* GTK4
-* HTSLib
+* [Crystal](https://crystal-lang.org/)
+* [gtk4.cr](https://github.com/hugopl/gtk4.cr)
+* [HTS.cr](https://github.com/bio-cr/hts.cr)
 
 ```sh
 make
@@ -21,12 +25,13 @@ htsgrid
 
 ## Development
 
-Let's learn.
+This tool is designed for learning purposes.
 
 ```sh
 shards install
 crystal build src/htsgrid.cr
 ```
+
 ## Contributing
 
 1. Fork it (<https://github.com/your-github-user/htsgrid/fork>)
