@@ -1,9 +1,8 @@
 require "./spec_helper"
+require "../src/htsgrid/version"
 
-describe Htsgrid do
-  # TODO: Write tests
-
-  it "works" do
-    false.should eq(true)
+describe "HTSGrid::VERSION" do
+  it "should be a string" do
+    HTSGrid::VERSION.should be_a(String)
   end
 end
