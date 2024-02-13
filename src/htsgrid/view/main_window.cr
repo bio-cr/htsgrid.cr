@@ -69,7 +69,7 @@ module HTSGrid
         header_string = ""
         begin
           HTS::Bam.open(file_path) do |hts|
-            header_string = hts.header.to_s   
+            header_string = hts.header.to_s
           end
         rescue
           return

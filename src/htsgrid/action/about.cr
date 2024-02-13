@@ -4,7 +4,7 @@ module HTSGrid
       def initialize(app : Gtk::Application)
         action = Gio::SimpleAction.new("about", nil)
         app.add_action(action)
-    
+
         action.activate_signal.connect do
           Gtk.show_about_dialog(
             app.active_window,
@@ -17,7 +17,7 @@ module HTSGrid
             website: "https://github.com/bio-cr/htsgrid.cr",
             authors: ["kojix2"],
             artists: ["kojix2"],
-            #translator_credits: THANKS,
+            # translator_credits: THANKS,
           )
         end
       end
