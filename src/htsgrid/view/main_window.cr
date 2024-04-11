@@ -5,7 +5,7 @@ module HTSGrid
 
       def initialize
         @app_instance = Gtk::Application.new("htsgrid.bio-cr.com", Gio::ApplicationFlags::None)
-        @app_instance.activate_signal.connect(->activate(Gtk::Application))
+        @app_instance.activate_signal.connect { activate(@app_instance) }
       end
 
       def run
@@ -21,20 +21,22 @@ module HTSGrid
       end
 
       private def window
-        @window ||= window = Gtk::ApplicationWindow.cast(ui_builder["window"])
+        @window ||= Gtk::ApplicationWindow.cast(ui_builder["window"])
       end
 
       def activate(app_instance : Gtk::Application)
-        open_button = Gtk::Button.cast(ui_builder["open_button"])
-        open_button.clicked_signal.connect(->open_button_clicked)
-
-        header_button = Gtk::Button.cast(ui_builder["header_button"])
-        header_button.clicked_signal.connect(->header_button_clicked)
+        setup_button("open_button", ->open_button_clicked)
+        setup_button("header_button", ->header_button_clicked)
 
         HTSGrid::Action::About.new(app_instance)
         window.application = app_instance
-        tree_view = Gtk::TreeView.cast(ui_builder["tree_view"])
+        Gtk::TreeView.cast(ui_builder["tree_view"])
         window.present
+      end
+
+      def setup_button(button_name, callback)
+        button = Gtk::Button.cast(ui_builder[button_name])
+        button.clicked_signal.connect(&callback)
       end
 
       def open_button_clicked
@@ -68,20 +70,18 @@ module HTSGrid
       end
 
       private def execute_file_response(dialog)
-        file_path = dialog.file.try(&.path)
-        return if file_path.nil?
-
-        file_path = File.expand_path(file_path, home: Path.home)
-        list_model.try { |m| fill_model(m, file_path) }
-        window.title = file_path
-        @file_path = file_path
+        if (file_path = dialog.file.try(&.path))
+          file_path = File.expand_path(file_path, home: Path.home)
+          list_model.try { |m| fill_model(m, file_path) }
+          window.title = file_path
+          @file_path = file_path
+        end
       end
 
       def header_button_clicked
-        header_string = fetch_header_from_file
-        return if header_string.nil?
-
-        instantiate_header_window(header_string)
+        if (header_string = fetch_header_from_file)
+          instantiate_header_window(header_string)
+        end
       end
 
       private def instantiate_header_window(header_string)
@@ -90,9 +90,10 @@ module HTSGrid
       end
 
       private def fetch_header_from_file
-        return if file_path.nil?
-        bam_handle = HTS::Bam.open(file_path.not_nil!)
-        bam_handle.header.to_s
+        if file_path
+          bam_handle = HTS::Bam.open(file_path.not_nil!)
+          bam_handle.header.to_s
+        end
       end
 
       def fill_model(model : Gtk::ListStore, file_path)
