@@ -52,30 +52,40 @@ module HTSGrid
           case Gtk::ResponseType.from_value(response)
           when .cancel?
           when .accept?
-            file_path = dialog.file.try(&.path)
-            unless file_path.nil?
-              file_path = File.expand_path(file_path, home: Path.home)
-              list_model.try { |model| fill_model(model, file_path) }
-              window.title = file_path
-              @file_path = file_path
-            end
+            execute_file_response(dialog)
           end
           dialog.destroy
         end
         dialog.present
       end
 
+      private def execute_file_response(dialog)
+        file_path = dialog.file.try(&.path)
+        return if file_path.nil?
+
+        file_path = File.expand_path(file_path, home: Path.home)
+        list_model.try { |m| fill_model(m, file_path) }
+        window.title = file_path
+        @file_path = file_path
+      end
+
       def header_button_clicked
-        header_string = ""
-        begin
-          HTS::Bam.open(file_path) do |hts|
-            header_string = hts.header.to_s
-          end
-        rescue
-          return
-        end
+        header_string = fetch_header_from_file
+        return if header_string.nil?
+
+        instantiate_header_window(header_string)
+      end
+
+      private def instantiate_header_window(header_string)
         hw = HeaderWindow.new(@app)
         hw.text = header_string
+      end
+
+      private def fetch_header_from_file
+        hts = HTS::Bam.open(file_path)
+        hts.header.to_s
+      rescue
+        nil
       end
 
       def fill_model(model : Gtk::ListStore, file_path)
@@ -87,21 +97,25 @@ module HTSGrid
         model.clear
         bam.each do |r|
           itr = model.append
-          row = [
-            r.qname,
-            r.flag.to_s,
-            r.chrom,
-            (r.pos + 1).to_s,
-            (r.mapq).to_s,
-            r.cigar.to_s,
-            r.mate_chrom,
-            (r.mpos + 1).to_s,
-            r.isize.to_s,
-            r.seq,
-          ]
+          row = prepare_row(r)
           model.set(itr, (0..10), row)
         end
         bam.close
+      end
+
+      private def prepare_row(r)
+        [
+          r.qname,
+          r.flag.to_s,
+          r.chrom,
+          r.pos.to_s,
+          r.mapq.to_s,
+          r.cigar.to_s,
+          r.mate_chrom,
+          (r.mpos + 1).to_s,
+          r.isize.to_s,
+          r.seq,
+        ]
       end
     end
   end
