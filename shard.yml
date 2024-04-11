@@ -11,10 +11,9 @@ targets:
 dependencies:
   gtk4:
     github: hugopl/gtk4.cr
+    branch: main
   hts:
     github: bio-cr/hts.cr
     branch: develop
-
-crystal: 1.5.1
 
 license: MIT
