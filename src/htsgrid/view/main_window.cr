@@ -1,13 +1,13 @@
 module HTSGrid
   module View
     class MainWindow
-      COLUMN_TITLES = %w[QNAME FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN SEQ QUAL]
-
       getter file_path : String? = nil
 
       def initialize
         @app_instance = Gtk::Application.new("htsgrid.bio-cr.com", Gio::ApplicationFlags::None)
         @activated = false
+        @document = nil.as(Document?)
+        @columns = [] of Gtk::ColumnViewColumn
         @app_instance.activate_signal.connect { activate(@app_instance) }
       end
 
@@ -19,12 +19,12 @@ module HTSGrid
         @ui_builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
-      private def alignment_model
-        @alignment_model ||= AlignmentModel.new
+      private def table_model
+        @table_model ||= TableModel.new
       end
 
-      private def column_view
-        @column_view ||= Gtk::ColumnView.cast(ui_builder["alignment_view"])
+      private def table_view
+        @table_view ||= Gtk::ColumnView.cast(ui_builder["table_view"])
       end
 
       private def window
@@ -37,17 +37,15 @@ module HTSGrid
           setup_button("header_button", ->header_button_clicked)
           HTSGrid::Action::About.new(app_instance)
           window.application = app_instance
-          setup_alignment_view
+          setup_table_view
           @activated = true
         end
         window.present
       end
 
-      private def setup_alignment_view
-        column_view.model = Gtk::NoSelection.new(model: alignment_model)
-        COLUMN_TITLES.each_with_index do |title, index|
-          column_view.append_column(build_column(title, index))
-        end
+      private def setup_table_view
+        table_view.model = Gtk::NoSelection.new(model: table_model)
+        configure_columns(DocumentLoader::ALIGNMENT_COLUMNS)
       end
 
       private def build_column(title : String, index : Int32) : Gtk::ColumnViewColumn
@@ -57,7 +55,7 @@ module HTSGrid
         end
         factory.bind_signal.connect do |object|
           list_item = Gtk::ListItem.cast(object)
-          item = list_item.item.as(AlignmentItem)
+          item = list_item.item.as(TableItem)
           list_item.child.as(Gtk::Label).label = item.values[index]
         end
         Gtk::ColumnViewColumn.new(title: title, factory: factory, resizable: true)
@@ -69,9 +67,12 @@ module HTSGrid
       end
 
       def open_button_clicked
+        filters, default_filter = build_file_filters
         dialog = Gtk::FileDialog.new(
           title: "Open File",
-          modal: true
+          modal: true,
+          filters: filters,
+          default_filter: default_filter
         )
         dialog.open(window, nil) do |_, result|
           execute_file_response(dialog.open_finish(result))
@@ -86,16 +87,30 @@ module HTSGrid
         if (path = file.path)
           file_path = path.to_s
           file_path = File.expand_path(file_path, home: Path.home)
-          return unless fill_model(file_path)
+          document = load_document(file_path)
+          return unless document
 
+          apply_document(document)
           window.title = file_path
           @file_path = file_path
         end
       end
 
+      private def build_file_filters : Tuple(Gio::ListStore, Gtk::FileFilter)
+        supported_filter = Gtk::FileFilter.new(
+          name: "HTS files",
+          patterns: ["*.sam", "*.bam", "*.cram", "*.vcf", "*.vcf.gz", "*.bcf"]
+        )
+        all_filter = Gtk::FileFilter.new(name: "All files", patterns: ["*"])
+        filters = Gio::ListStore.new(Gtk::FileFilter.g_type)
+        filters.append(supported_filter)
+        filters.append(all_filter)
+        {filters, supported_filter}
+      end
+
       def header_button_clicked
-        if (header_string = fetch_header_from_file)
-          instantiate_header_window(header_string)
+        if (document = @document)
+          instantiate_header_window(document.header_text)
         end
       end
 
@@ -104,28 +119,28 @@ module HTSGrid
         header_window.text = header_string
       end
 
-      private def fetch_header_from_file
-        if file_path
-          HTS::Bam.open(file_path.not_nil!) do |bam|
-            bam.header.to_s
-          end
-        end
-      rescue ex : HTS::Error
-        STDERR.puts "Failed to read the header: #{ex.message}"
+      private def load_document(file_path : String) : Document?
+        DocumentLoader.load(file_path)
+      rescue ex : DocumentLoadError
+        STDERR.puts "Failed to read #{file_path}: #{ex.message}"
         nil
       end
 
-      def fill_model(file_path) : Bool
-        alignment_model.clear
-        HTS::Bam.open(file_path) do |bam|
-          bam.each do |record|
-            alignment_model.add(HTSGrid::AlignmentRow.from(record))
-          end
+      private def apply_document(document : Document) : Nil
+        table_model.replace([] of Array(String))
+        configure_columns(document.columns)
+        table_model.replace(document.rows)
+        @document = document
+      end
+
+      private def configure_columns(titles : Enumerable(String)) : Nil
+        @columns.each { |column| table_view.remove_column(column) }
+        @columns.clear
+        titles.each_with_index do |title, index|
+          column = build_column(title, index)
+          @columns << column
+          table_view.append_column(column)
         end
-        true
-      rescue ex : HTS::Error
-        STDERR.puts "Failed to read #{file_path}: #{ex.message}"
-        false
       end
     end
   end

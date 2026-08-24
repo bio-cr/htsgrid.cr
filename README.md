@@ -1,6 +1,6 @@
 # HTSGrid
 
-A simple SAM/BAM viewer
+A simple SAM/BAM/CRAM and VCF/BCF viewer
 
 ![screenshot](data/screenshot.png)
 

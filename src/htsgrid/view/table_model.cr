@@ -1,6 +1,6 @@
 module HTSGrid
   module View
-    class AlignmentItem < GObject::Object
+    class TableItem < GObject::Object
       getter values : Array(String)
 
       def initialize(@values : Array(String))
@@ -8,23 +8,18 @@ module HTSGrid
       end
     end
 
-    class AlignmentModel < GObject::Object
+    class TableModel < GObject::Object
       include Gio::ListModel
 
-      @items = [] of AlignmentItem
+      @items = [] of TableItem
 
-      def add(values : Array(String)) : Nil
-        position = @items.size.to_u32
-        @items << AlignmentItem.new(values)
-        items_changed(position, 0, 1)
-      end
-
-      def clear : Nil
+      def replace(rows : Enumerable(Array(String))) : Nil
         removed = @items.size.to_u32
-        return if removed == 0
+        new_items = rows.map { |values| TableItem.new(values) }.to_a
+        return if removed == 0 && new_items.empty?
 
-        @items.clear
-        items_changed(0, removed, 0)
+        @items = new_items
+        items_changed(0, removed, @items.size.to_u32)
       end
 
       @[GObject::Virtual]
@@ -39,7 +34,7 @@ module HTSGrid
 
       @[GObject::Virtual]
       def get_item_type : UInt64
-        AlignmentItem.g_type
+        TableItem.g_type
       end
     end
   end
