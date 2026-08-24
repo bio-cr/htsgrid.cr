@@ -2,7 +2,10 @@ PREFIX ?= /usr
 
 all: build
 
-build:
+bindings:
+	./bin/gi-crystal
+
+build: bindings
 	shards build --release --no-debug
 
 clean:

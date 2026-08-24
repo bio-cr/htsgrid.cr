@@ -29,6 +29,7 @@ This tool is designed for learning purposes.
 
 ```sh
 shards install
+bin/gi-crystal
 crystal build src/htsgrid.cr
 ```
 

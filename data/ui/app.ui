@@ -3,22 +3,6 @@
 <interface>
   <!-- interface-name tree.cmb.ui -->
   <requires lib="gtk" version="4.0"/>
-  <object class="GtkListStore" id="list_model">
-    <columns>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-      <column type="gchararray"/>
-    </columns>
-  </object>
-  <object class="GtkAdjustment" id="vscroll"/>
   <object class="GtkApplicationWindow" id="window">
     <property name="default-width">800</property>
     <property name="default-height">400</property>
@@ -29,131 +13,8 @@
         <child>
           <object class="GtkScrolledWindow">
             <child>
-              <object class="GtkTreeView" id="tree_view">
-                <property name="model">list_model</property>
+              <object class="GtkColumnView" id="alignment_view">
                 <property name="vexpand">True</property>
-                <property name="vadjustment">vscroll</property>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">QNAME</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">0</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">FLAG</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">1</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">RNAME</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">2</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">POS</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">3</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">MAPQ</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">4</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">CIGAR</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">5</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">RNEXT</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">6</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">PNEXT</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">7</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">TLEN</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">8</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">SEQ</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">9</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkTreeViewColumn">
-                    <property name="title">QUAL</property>
-                    <child>
-                      <object class="GtkCellRendererText"/>
-                      <attributes>
-                        <attribute name="text">10</attribute>
-                      </attributes>
-                    </child>
-                  </object>
-                </child>
               </object>
             </child>
           </object>

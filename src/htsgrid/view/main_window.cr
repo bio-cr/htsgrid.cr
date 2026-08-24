@@ -1,10 +1,13 @@
 module HTSGrid
   module View
     class MainWindow
+      COLUMN_TITLES = %w[QNAME FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN SEQ QUAL]
+
       getter file_path : String? = nil
 
       def initialize
         @app_instance = Gtk::Application.new("htsgrid.bio-cr.com", Gio::ApplicationFlags::None)
+        @activated = false
         @app_instance.activate_signal.connect { activate(@app_instance) }
       end
 
@@ -16,8 +19,12 @@ module HTSGrid
         @ui_builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
-      private def list_model
-        @list_model ||= Gtk::ListStore.cast(ui_builder["list_model"])
+      private def alignment_model
+        @alignment_model ||= AlignmentModel.new
+      end
+
+      private def column_view
+        @column_view ||= Gtk::ColumnView.cast(ui_builder["alignment_view"])
       end
 
       private def window
@@ -25,13 +32,35 @@ module HTSGrid
       end
 
       def activate(app_instance : Gtk::Application)
-        setup_button("open_button", ->open_button_clicked)
-        setup_button("header_button", ->header_button_clicked)
-
-        HTSGrid::Action::About.new(app_instance)
-        window.application = app_instance
-        Gtk::TreeView.cast(ui_builder["tree_view"])
+        unless @activated
+          setup_button("open_button", ->open_button_clicked)
+          setup_button("header_button", ->header_button_clicked)
+          HTSGrid::Action::About.new(app_instance)
+          window.application = app_instance
+          setup_alignment_view
+          @activated = true
+        end
         window.present
+      end
+
+      private def setup_alignment_view
+        column_view.model = Gtk::NoSelection.new(model: alignment_model)
+        COLUMN_TITLES.each_with_index do |title, index|
+          column_view.append_column(build_column(title, index))
+        end
+      end
+
+      private def build_column(title : String, index : Int32) : Gtk::ColumnViewColumn
+        factory = Gtk::SignalListItemFactory.new
+        factory.setup_signal.connect do |object|
+          Gtk::ListItem.cast(object).child = Gtk::Label.new(xalign: 0.0_f32)
+        end
+        factory.bind_signal.connect do |object|
+          list_item = Gtk::ListItem.cast(object)
+          item = list_item.item.as(AlignmentItem)
+          list_item.child.as(Gtk::Label).label = item.values[index]
+        end
+        Gtk::ColumnViewColumn.new(title: title, factory: factory, resizable: true)
       end
 
       def setup_button(button_name, callback)
@@ -40,39 +69,25 @@ module HTSGrid
       end
 
       def open_button_clicked
-        dialog = setup_file_chooser_dialog
-        setup_dialog_response(dialog)
-        dialog.present
-      end
-
-      private def setup_file_chooser_dialog
-        Gtk::FileChooserDialog.new(
-          application: @app_instance,
+        dialog = Gtk::FileDialog.new(
           title: "Open File",
-          action: Gtk::FileChooserAction::Open,
-          transient_for: window,
           modal: true
-        ).tap do |dialog|
-          dialog.add_button("Cancel", Gtk::ResponseType::Cancel.value)
-          dialog.add_button("Open", Gtk::ResponseType::Accept.value)
+        )
+        dialog.open(window, nil) do |_, result|
+          execute_file_response(dialog.open_finish(result))
+        rescue Gio::IOErrorEnum::Cancelled
+          # Closing the dialog is an expected outcome.
+        rescue ex
+          STDERR.puts "Failed to select a file: #{ex.message}"
         end
       end
 
-      private def setup_dialog_response(dialog)
-        dialog.response_signal.connect do |response|
-          case Gtk::ResponseType.from_value(response)
-          when .cancel?
-          when .accept?
-            execute_file_response(dialog)
-          end
-          dialog.destroy
-        end
-      end
-
-      private def execute_file_response(dialog)
-        if (file_path = dialog.file.try(&.path))
+      private def execute_file_response(file : Gio::File)
+        if (path = file.path)
+          file_path = path.to_s
           file_path = File.expand_path(file_path, home: Path.home)
-          list_model.try { |m| fill_model(m, file_path) }
+          return unless fill_model(file_path)
+
           window.title = file_path
           @file_path = file_path
         end
@@ -91,39 +106,26 @@ module HTSGrid
 
       private def fetch_header_from_file
         if file_path
-          bam_handle = HTS::Bam.open(file_path.not_nil!)
-          bam_handle.header.to_s
+          HTS::Bam.open(file_path.not_nil!) do |bam|
+            bam.header.to_s
+          end
         end
+      rescue ex : HTS::Error
+        STDERR.puts "Failed to read the header: #{ex.message}"
+        nil
       end
 
-      def fill_model(model : Gtk::ListStore, file_path)
-        begin
-          bam = HTS::Bam.open(file_path)
-        rescue
-          return
+      def fill_model(file_path) : Bool
+        alignment_model.clear
+        HTS::Bam.open(file_path) do |bam|
+          bam.each do |record|
+            alignment_model.add(HTSGrid::AlignmentRow.from(record))
+          end
         end
-        model.clear
-        bam.each do |record|
-          new_row = model.append
-          row = prepare_row(record)
-          model.set(new_row, (0..10), row)
-        end
-        bam.close
-      end
-
-      private def prepare_row(record)
-        [
-          record.qname,
-          record.flag.to_s,
-          record.chrom,
-          record.pos.to_s,
-          record.mapq.to_s,
-          record.cigar.to_s,
-          record.mate_chrom,
-          (record.mpos + 1).to_s,
-          record.isize.to_s,
-          record.seq,
-        ]
+        true
+      rescue ex : HTS::Error
+        STDERR.puts "Failed to read #{file_path}: #{ex.message}"
+        false
       end
     end
   end
