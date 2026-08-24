@@ -53,7 +53,9 @@ module HTSGrid
           default_filter: default_filter
         )
         dialog.open(window, nil) do |_, result|
-          execute_file_response(dialog.open_finish(result))
+          if file = dialog.open_finish(result)
+            execute_file_response(file)
+          end
         rescue Gio::IOErrorEnum::Cancelled
           # Closing the dialog is an expected outcome.
         rescue ex
