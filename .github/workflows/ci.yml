@@ -22,7 +22,9 @@ jobs:
           crystal: latest
       - name: Install native dependencies (Ubuntu)
         if: matrix.os == 'ubuntu'
-        run: sudo apt-get install -y libgtk-4-dev libgirepository1.0-dev libhts-dev
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libgtk-4-dev libgirepository1.0-dev libhts-dev
       - name: Install native dependencies (macOS)
         if: matrix.os == 'macos'
         run: brew install gtk4 gobject-introspection htslib
