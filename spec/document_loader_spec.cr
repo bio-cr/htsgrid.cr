@@ -7,7 +7,6 @@ describe HTSGrid::DocumentLoader do
 
     SpecFixtures.with_temp_hts_file(sam) do |path|
       document = HTSGrid::DocumentLoader.load(path)
-      document.kind.alignment?.should be_true
       document.columns.should eq(HTSGrid::AlignmentRow::COLUMNS)
       document.rows.should eq([
         ["read1", "0", "chr1", "10", "60", "4M", "*", "0", "0", "ACGT", "????"],
@@ -19,7 +18,6 @@ describe HTSGrid::DocumentLoader do
   it "loads all VCF columns including FORMAT and multiple samples" do
     SpecFixtures.with_temp_hts_file(SpecFixtures.multisample_vcf) do |path|
       document = HTSGrid::DocumentLoader.load(path)
-      document.kind.variant?.should be_true
       document.columns.should eq([
         "CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO",
         "FORMAT", "sample1", "sample2",
@@ -55,7 +53,6 @@ describe HTSGrid::DocumentLoader do
       Compress::Gzip::Writer.open(path) { |gzip| gzip << SpecFixtures.multisample_vcf }
 
       document = HTSGrid::DocumentLoader.load(path)
-      document.kind.variant?.should be_true
       document.rows.first[0, 5].should eq(["chr1", "10", "rs1", "A", "C,G"])
     end
   end
@@ -75,7 +72,6 @@ describe HTSGrid::DocumentLoader do
         end
 
         document = HTSGrid::DocumentLoader.load(bcf_path)
-        document.kind.variant?.should be_true
         document.columns.should eq(expected.columns)
         document.rows.should eq(expected.rows)
         document.header_text.should contain("#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tsample1\tsample2")

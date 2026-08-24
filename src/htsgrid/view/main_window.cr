@@ -4,8 +4,6 @@ module HTSGrid
       APPLICATION_ID = "dev.bio-cr.htsgrid"
       FILE_PATTERNS  = ["*.sam", "*.bam", "*.cram", "*.vcf", "*.vcf.gz", "*.bcf"]
 
-      getter file_path : String? = nil
-
       def initialize
         @application = Gtk::Application.new(APPLICATION_ID, Gio::ApplicationFlags::None)
         @activated = false
@@ -21,12 +19,8 @@ module HTSGrid
         @ui_builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
-      private def table_view
-        @table_view ||= Gtk::ColumnView.cast(ui_builder["table_view"])
-      end
-
       private def document_table
-        @document_table ||= DocumentTable.new(table_view)
+        @document_table ||= DocumentTable.new(Gtk::ColumnView.cast(ui_builder["table_view"]))
       end
 
       private def window
@@ -74,9 +68,9 @@ module HTSGrid
           document = load_document(file_path)
           return unless document
 
-          apply_document(document)
+          document_table.display(document)
+          @document = document
           window.title = file_path
-          @file_path = file_path
         end
       end
 
@@ -103,11 +97,6 @@ module HTSGrid
       rescue ex : DocumentLoadError
         STDERR.puts "Failed to read #{file_path}: #{ex.message}"
         nil
-      end
-
-      private def apply_document(document : Document) : Nil
-        document_table.display(document)
-        @document = document
       end
     end
   end

@@ -4,19 +4,20 @@ module HTSGrid
 
     def load(file_path : Path | String) : Document
       path = file_path.to_s
-      case detect_kind(path)
-      when FileKind::Alignment
+      format = detect_format(path)
+      case format
+      when .sam?, .bam?, .cram?
         load_alignment(path)
-      when FileKind::Variant
+      when .vcf?, .bcf?
         load_variant(path)
       else
-        raise DocumentLoadError.new("Unsupported document kind")
+        raise DocumentLoadError.new("Unsupported file format: #{format}")
       end
     rescue ex : HTS::Error
       raise DocumentLoadError.new(ex.message || "Failed to read #{path}", ex)
     end
 
-    private def detect_kind(file_path : Path | String) : FileKind
+    private def detect_format(file_path : Path | String) : HTS::LibHTS::HtsExactFormat
       path = file_path.to_s
       hts_file = HTS::LibHTS.hts_open(path, "r")
       raise DocumentLoadError.new("Failed to open #{path}") if hts_file.null?
@@ -25,14 +26,7 @@ module HTSGrid
         format = HTS::LibHTS.hts_get_format(hts_file)
         raise DocumentLoadError.new("Failed to inspect the format of #{path}") if format.null?
 
-        case format.value.format
-        when .sam?, .bam?, .cram?
-          FileKind::Alignment
-        when .vcf?, .bcf?
-          FileKind::Variant
-        else
-          raise DocumentLoadError.new("Unsupported file format: #{format.value.format}")
-        end
+        format.value.format
       ensure
         HTS::LibHTS.hts_close(hts_file)
       end
@@ -45,7 +39,7 @@ module HTSGrid
         header_text = bam.header.to_s
         bam.each { |record| rows << AlignmentRow.from(record) }
       end
-      Document.new(FileKind::Alignment, AlignmentRow::COLUMNS.dup, rows, header_text)
+      Document.new(AlignmentRow::COLUMNS.dup, rows, header_text)
     end
 
     private def load_variant(file_path : String) : Document
@@ -58,7 +52,7 @@ module HTSGrid
         columns.concat(["FORMAT"] + samples) unless samples.empty?
         bcf.each { |record| rows << VariantRow.from(record, columns.size) }
       end
-      Document.new(FileKind::Variant, columns, rows, header_text)
+      Document.new(columns, rows, header_text)
     end
   end
 end
