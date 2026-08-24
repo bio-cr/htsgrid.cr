@@ -1,0 +1,22 @@
+version: 2.0
+shards:
+  gi-crystal:
+    git: https://github.com/hugopl/gi-crystal.git
+    version: 0.25.1
+
+  gtk4:
+    git: https://github.com/hugopl/gtk4.cr.git
+    version: 0.18.0+git.commit.b0be1f829b0ac3080fe607bde11ae37338736675
+
+  harfbuzz:
+    git: https://github.com/hugopl/harfbuzz.cr.git
+    version: 0.2.1
+
+  hts:
+    git: https://github.com/bio-cr/hts.cr.git
+    version: 0.4.0+git.commit.c16aa4c82929212b159d5e755a8d60817d68932d
+
+  pango:
+    git: https://github.com/hugopl/pango.cr.git
+    version: 0.3.1
+

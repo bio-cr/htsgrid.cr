@@ -1,7 +1,7 @@
 module HTSGrid
   module Action
     class About
-      def initialize(app : Gtk::Application)
+      def self.register(app : Gtk::Application) : Nil
         action = Gio::SimpleAction.new("about", nil)
         app.add_action(action)
 
@@ -16,8 +16,7 @@ module HTSGrid
             copyright: "© 2022 kojix2",
             website: "https://github.com/bio-cr/htsgrid.cr",
             authors: ["kojix2"],
-            artists: ["kojix2"],
-            # translator_credits: THANKS,
+            artists: ["kojix2"]
           )
         end
       end

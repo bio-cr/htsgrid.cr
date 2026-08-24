@@ -1,72 +1,56 @@
 module HTSGrid
   module View
     class MainWindow
+      APPLICATION_ID = "dev.bio-cr.htsgrid"
+      FILE_PATTERNS  = ["*.sam", "*.bam", "*.cram", "*.vcf", "*.vcf.gz", "*.bcf"]
+
       getter file_path : String? = nil
 
       def initialize
-        @app_instance = Gtk::Application.new("htsgrid.bio-cr.com", Gio::ApplicationFlags::None)
+        @application = Gtk::Application.new(APPLICATION_ID, Gio::ApplicationFlags::None)
         @activated = false
         @document = nil.as(Document?)
-        @columns = [] of Gtk::ColumnViewColumn
-        @app_instance.activate_signal.connect { activate(@app_instance) }
+        @application.activate_signal.connect { activate }
       end
 
       def run
-        @app_instance.run
+        @application.run
       end
 
       private def ui_builder
         @ui_builder ||= Gtk::Builder.new_from_resource("/dev/bio-cr/htsgrid/ui/app.ui")
       end
 
-      private def table_model
-        @table_model ||= TableModel.new
-      end
-
       private def table_view
         @table_view ||= Gtk::ColumnView.cast(ui_builder["table_view"])
+      end
+
+      private def document_table
+        @document_table ||= DocumentTable.new(table_view)
       end
 
       private def window
         @window ||= Gtk::ApplicationWindow.cast(ui_builder["window"])
       end
 
-      def activate(app_instance : Gtk::Application)
+      private def activate : Nil
         unless @activated
           setup_button("open_button", ->open_button_clicked)
           setup_button("header_button", ->header_button_clicked)
-          HTSGrid::Action::About.new(app_instance)
-          window.application = app_instance
-          setup_table_view
+          HTSGrid::Action::About.register(@application)
+          window.application = @application
+          document_table
           @activated = true
         end
         window.present
       end
 
-      private def setup_table_view
-        table_view.model = Gtk::NoSelection.new(model: table_model)
-        configure_columns(DocumentLoader::ALIGNMENT_COLUMNS)
-      end
-
-      private def build_column(title : String, index : Int32) : Gtk::ColumnViewColumn
-        factory = Gtk::SignalListItemFactory.new
-        factory.setup_signal.connect do |object|
-          Gtk::ListItem.cast(object).child = Gtk::Label.new(xalign: 0.0_f32)
-        end
-        factory.bind_signal.connect do |object|
-          list_item = Gtk::ListItem.cast(object)
-          item = list_item.item.as(TableItem)
-          list_item.child.as(Gtk::Label).label = item.values[index]
-        end
-        Gtk::ColumnViewColumn.new(title: title, factory: factory, resizable: true)
-      end
-
-      def setup_button(button_name, callback)
+      private def setup_button(button_name : String, callback) : Nil
         button = Gtk::Button.cast(ui_builder[button_name])
         button.clicked_signal.connect(&callback)
       end
 
-      def open_button_clicked
+      private def open_button_clicked : Nil
         filters, default_filter = build_file_filters
         dialog = Gtk::FileDialog.new(
           title: "Open File",
@@ -83,8 +67,8 @@ module HTSGrid
         end
       end
 
-      private def execute_file_response(file : Gio::File)
-        if (path = file.path)
+      private def execute_file_response(file : Gio::File) : Nil
+        if path = file.path
           file_path = path.to_s
           file_path = File.expand_path(file_path, home: Path.home)
           document = load_document(file_path)
@@ -99,7 +83,7 @@ module HTSGrid
       private def build_file_filters : Tuple(Gio::ListStore, Gtk::FileFilter)
         supported_filter = Gtk::FileFilter.new(
           name: "HTS files",
-          patterns: ["*.sam", "*.bam", "*.cram", "*.vcf", "*.vcf.gz", "*.bcf"]
+          patterns: FILE_PATTERNS
         )
         all_filter = Gtk::FileFilter.new(name: "All files", patterns: ["*"])
         filters = Gio::ListStore.new(Gtk::FileFilter.g_type)
@@ -108,15 +92,10 @@ module HTSGrid
         {filters, supported_filter}
       end
 
-      def header_button_clicked
-        if (document = @document)
-          instantiate_header_window(document.header_text)
+      private def header_button_clicked : Nil
+        if document = @document
+          HeaderWindow.new(@application, window, document.header_text)
         end
-      end
-
-      private def instantiate_header_window(header_string)
-        header_window = HeaderWindow.new(@app_instance)
-        header_window.text = header_string
       end
 
       private def load_document(file_path : String) : Document?
@@ -127,20 +106,8 @@ module HTSGrid
       end
 
       private def apply_document(document : Document) : Nil
-        table_model.replace([] of Array(String))
-        configure_columns(document.columns)
-        table_model.replace(document.rows)
+        document_table.display(document)
         @document = document
-      end
-
-      private def configure_columns(titles : Enumerable(String)) : Nil
-        @columns.each { |column| table_view.remove_column(column) }
-        @columns.clear
-        titles.each_with_index do |title, index|
-          column = build_column(title, index)
-          @columns << column
-          table_view.append_column(column)
-        end
       end
     end
   end

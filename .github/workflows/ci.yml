@@ -28,6 +28,8 @@ jobs:
         run: shards install --without-development --release
       - name: Run gi-crystal
         run: bin/gi-crystal
+      - name: Check formatting
+        run: crystal tool format --check src spec
       - name: Run specs
         run: crystal spec
       - name: Build application

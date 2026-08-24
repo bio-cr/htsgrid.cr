@@ -2,6 +2,8 @@ module HTSGrid
   module VariantRow
     extend self
 
+    COLUMNS = %w[CHROM POS ID REF ALT QUAL FILTER INFO]
+
     def from(record : HTS::Bcf::Record, expected_size : Int32) : Array(String)
       values = record.to_s.chomp.split('\t')
       unless values.size == expected_size

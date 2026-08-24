@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <object class="GtkWindow" id="header_window">
+    <property name="default-width">800</property>
+    <property name="default-height">400</property>
+    <property name="title">Header</property>
+    <property name="child">
+      <object class="GtkScrolledWindow">
+        <property name="child">
+          <object class="GtkTextView" id="header_text_view">
+            <property name="editable">false</property>
+            <property name="cursor-visible">false</property>
+            <property name="monospace">true</property>
+            <property name="left-margin">8</property>
+            <property name="right-margin">8</property>
+            <property name="top-margin">8</property>
+            <property name="bottom-margin">8</property>
+          </object>
+        </property>
+      </object>
+    </property>
+  </object>
+</interface>

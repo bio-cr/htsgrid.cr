@@ -2,9 +2,6 @@ module HTSGrid
   module DocumentLoader
     extend self
 
-    ALIGNMENT_COLUMNS = %w[QNAME FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN SEQ QUAL]
-    VARIANT_COLUMNS   = %w[CHROM POS ID REF ALT QUAL FILTER INFO]
-
     def load(file_path : Path | String) : Document
       path = file_path.to_s
       case detect_kind(path)
@@ -16,10 +13,10 @@ module HTSGrid
         raise DocumentLoadError.new("Unsupported document kind")
       end
     rescue ex : HTS::Error
-      raise DocumentLoadError.new(ex.message || "Failed to read #{path}")
+      raise DocumentLoadError.new(ex.message || "Failed to read #{path}", ex)
     end
 
-    def detect_kind(file_path : Path | String) : FileKind
+    private def detect_kind(file_path : Path | String) : FileKind
       path = file_path.to_s
       hts_file = HTS::LibHTS.hts_open(path, "r")
       raise DocumentLoadError.new("Failed to open #{path}") if hts_file.null?
@@ -48,12 +45,12 @@ module HTSGrid
         header_text = bam.header.to_s
         bam.each { |record| rows << AlignmentRow.from(record) }
       end
-      Document.new(FileKind::Alignment, ALIGNMENT_COLUMNS.dup, rows, header_text)
+      Document.new(FileKind::Alignment, AlignmentRow::COLUMNS.dup, rows, header_text)
     end
 
     private def load_variant(file_path : String) : Document
       rows = [] of Array(String)
-      columns = VARIANT_COLUMNS.dup
+      columns = VariantRow::COLUMNS.dup
       header_text = ""
       HTS::Bcf.open(file_path) do |bcf|
         header_text = bcf.header.to_s

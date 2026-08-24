@@ -3,5 +3,6 @@
   <gresource prefix="/dev/bio-cr/htsgrid">
     <file compressed="true" preprocess="xml-stripblanks">icons/dev.bio-cr.htsgrid.svg</file>
     <file compressed="true" preprocess="xml-stripblanks">ui/app.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">ui/header.ui</file>
   </gresource>
 </gresources>

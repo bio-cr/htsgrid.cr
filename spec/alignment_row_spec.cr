@@ -1,13 +1,4 @@
 require "./spec_helper"
-require "hts"
-require "../src/htsgrid/version"
-require "../src/htsgrid/alignment_row"
-
-describe "HTSGrid::VERSION" do
-  it "should be a string" do
-    HTSGrid::VERSION.should be_a(String)
-  end
-end
 
 describe HTSGrid::AlignmentRow do
   header = HTS::Bam::Header.parse("@HD\tVN:1.6\n@SQ\tSN:chr1\tLN:1000\n")
@@ -55,7 +46,7 @@ describe HTSGrid::AlignmentRow do
     ])
   end
 
-  it "formats a record read through the current hts.cr API" do
+  it "formats a record read through hts.cr" do
     File.tempfile("htsgrid", ".sam") do |file|
       file << "@HD\tVN:1.6\n"
       file << "@SQ\tSN:chr1\tLN:1000\n"

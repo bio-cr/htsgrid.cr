@@ -2,6 +2,8 @@ module HTSGrid
   module AlignmentRow
     extend self
 
+    COLUMNS = %w[QNAME FLAG RNAME POS MAPQ CIGAR RNEXT PNEXT TLEN SEQ QUAL]
+
     def from(record : HTS::Bam::Record) : Array(String)
       chrom = record.chrom
       mate_chrom = record.mate_chrom

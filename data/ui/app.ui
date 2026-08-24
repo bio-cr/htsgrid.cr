@@ -1,28 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Cambalache 0.10.3 -->
 <interface>
-  <!-- interface-name tree.cmb.ui -->
   <requires lib="gtk" version="4.0"/>
   <object class="GtkApplicationWindow" id="window">
     <property name="default-width">800</property>
     <property name="default-height">400</property>
     <property name="title">HTSGrid</property>
     <property name="child">
-      <object class="GtkBox">
-        <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkScrolledWindow">
-            <child>
-              <object class="GtkColumnView" id="table_view">
-                <property name="vexpand">True</property>
-              </object>
-            </child>
+      <object class="GtkScrolledWindow">
+        <property name="child">
+          <object class="GtkColumnView" id="table_view">
+            <property name="vexpand">true</property>
           </object>
-        </child>
-        <child>
-          <object class="GtkStatusbar">
-          </object>
-        </child>
+        </property>
       </object>
     </property>
     <child type="titlebar">
@@ -52,16 +41,6 @@
             <property name="tooltip-text">Menu</property>
           </object>
         </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkWindow" id="header_window">
-    <property name="default-width">800</property>
-    <property name="default-height">400</property>
-    <child>
-      <object class="GtkTextView" id="header_text_view">
-        <property name="editable">false</property>
-        <property name="vexpand">true</property>
       </object>
     </child>
   </object>
